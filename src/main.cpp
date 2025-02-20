@@ -5,33 +5,42 @@
 #include <glad/glad.h>
 
 const char *VERTEX_SHADER = "#version 330 core\n"
-    "layout (location = 0) in vec3 aPos;\n"
-    "void main()\n"
-    "{\n"
-    "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-    "}\0";
+                            "layout (location = 0) in vec3 aPos;\n"
+                            "void main()\n"
+                            "{\n"
+                            "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
+                            "}\0";
 const char *FRAGMENT_SHADER = "#version 330 core\n"
-    "out vec4 FragColor;\n"
-    "void main()\n"
-    "{\n"
-    "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-    "}\n\0";
+                              "out vec4 FragColor;\n"
+                              "void main()\n"
+                              "{\n"
+                              "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+                              "}\n\0";
 
-
-void framebufferSizeCallback(GLFWwindow *window, int width, int height) {
+void framebufferSizeCallback(GLFWwindow *window, int width, int height)
+{
   glViewport(0, 0, width, height);
 }
 
-GLFWwindow* initialSetup() {
-  if (!glfwInit()) return NULL;
-  GLFWwindow* window;
+GLFWwindow *initialSetup()
+{
+  if (!glfwInit())
+    return NULL;
+  GLFWwindow *window;
 
+#ifdef __APPLE__
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+  glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 1);
+  glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+#else
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+#endif
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
   window = glfwCreateWindow(800, 600, "Hello World", NULL, NULL);
-  if (!window) {
+  if (!window)
+  {
     glfwTerminate();
     return NULL;
   }
@@ -42,9 +51,13 @@ GLFWwindow* initialSetup() {
   return window;
 }
 
-int main() {
-  GLFWwindow* window = initialSetup();
-  if (window == NULL) { return -1; }
+int main()
+{
+  GLFWwindow *window = initialSetup();
+  if (window == NULL)
+  {
+    return -1;
+  }
 
   glViewport(0, 0, 800, 600);
 
@@ -65,7 +78,8 @@ int main() {
   char infoLog[512];
 
   glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-  if (!success) {
+  if (!success)
+  {
     glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
     fmt::println("ERROR::SHADER::PROGRAM::LINKING_FAILED\n {}", infoLog);
   }
@@ -74,16 +88,17 @@ int main() {
   glDeleteShader(vertexShader);
   glDeleteShader(fragmentShader);
 
-      float vertices[] = {
-         0.5f,  0.5f, 0.0f,  // top right
-         0.5f, -0.5f, 0.0f,  // bottom right
-        -0.5f, -0.5f, 0.0f,  // bottom left
-        -0.5f,  0.5f, 0.0f   // top left 
-    };
-    unsigned int indices[] = {  // note that we start from 0!
-        0, 1, 3,  // first Triangle
-        1, 2, 3   // second Triangle
-    };
+  float vertices[] = {
+      0.5f, 0.5f, 0.0f,   // top right
+      0.5f, -0.5f, 0.0f,  // bottom right
+      -0.5f, -0.5f, 0.0f, // bottom left
+      -0.5f, 0.5f, 0.0f   // top left
+  };
+  unsigned int indices[] = {
+      // note that we start from 0!
+      0, 1, 3, // first Triangle
+      1, 2, 3  // second Triangle
+  };
 
   uint32_t vbo, vao, ebo;
   glGenVertexArrays(1, &vao);
@@ -98,10 +113,11 @@ int main() {
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ebo);
   glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
-  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+  glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void *)0);
   glEnableVertexAttribArray(0);
 
-  while (!glfwWindowShouldClose(window)) {
+  while (!glfwWindowShouldClose(window))
+  {
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
