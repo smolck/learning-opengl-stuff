@@ -4,18 +4,7 @@
 #include <GLFW/glfw3.h>
 #include <glad/glad.h>
 
-const char *VERTEX_SHADER = "#version 330 core\n"
-                            "layout (location = 0) in vec3 aPos;\n"
-                            "void main()\n"
-                            "{\n"
-                            "   gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);\n"
-                            "}\0";
-const char *FRAGMENT_SHADER = "#version 330 core\n"
-                              "out vec4 FragColor;\n"
-                              "void main()\n"
-                              "{\n"
-                              "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
-                              "}\n\0";
+#include "shaders/shaders.hpp"
 
 void framebufferSizeCallback(GLFWwindow *window, int width, int height)
 {
@@ -61,32 +50,12 @@ int main()
 
   glViewport(0, 0, 800, 600);
 
-  uint32_t vertexShader = glCreateShader(GL_VERTEX_SHADER);
-  uint32_t fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-
-  glShaderSource(vertexShader, 1, &VERTEX_SHADER, NULL);
-  glCompileShader(vertexShader);
-  glShaderSource(fragmentShader, 1, &FRAGMENT_SHADER, NULL);
-  glCompileShader(fragmentShader);
-
-  uint32_t shaderProgram = glCreateProgram();
-  glAttachShader(shaderProgram, vertexShader);
-  glAttachShader(shaderProgram, fragmentShader);
-  glLinkProgram(shaderProgram);
-
-  int success;
-  char infoLog[512];
-
-  glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success);
-  if (!success)
+  auto shaderProgram = load_shader_program("src/shaders/shader.vert", "src/shaders/shader.frag");
+  if (shaderProgram.id == 0)
   {
-    glGetProgramInfoLog(shaderProgram, 512, NULL, infoLog);
-    fmt::println("ERROR::SHADER::PROGRAM::LINKING_FAILED\n {}", infoLog);
+    fmt::println("Umm your shaders are borked my guy");
+    return -1;
   }
-
-  glUseProgram(shaderProgram);
-  glDeleteShader(vertexShader);
-  glDeleteShader(fragmentShader);
 
   float vertices[] = {
       0.5f, 0.5f, 0.0f,   // top right
@@ -121,7 +90,7 @@ int main()
     glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
     glClear(GL_COLOR_BUFFER_BIT);
 
-    glUseProgram(shaderProgram);
+    shaderProgram.use();
     glBindVertexArray(vao);
     glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
     glBindVertexArray(0);
