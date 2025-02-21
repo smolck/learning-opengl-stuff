@@ -48,7 +48,12 @@ int main()
     return -1;
   }
 
-  glViewport(0, 0, 800, 600);
+  // Viewport was wrong on macOS initially due to scaling I think,
+  // anyways this fixes it
+  // ref: https://stackoverflow.com/questions/70907459/glfw-window-on-macbook-16-displaying-content-only-in-upper-left-of-window
+  int initial_framebuffer_width, initial_framebuffer_height;
+  glfwGetFramebufferSize(window, &initial_framebuffer_width, &initial_framebuffer_height);
+  glViewport(0, 0, initial_framebuffer_width, initial_framebuffer_height);
 
   auto shaderProgram = load_shader_program("src/shaders/shader.vert", "src/shaders/shader.frag");
   if (shaderProgram.id == 0)
